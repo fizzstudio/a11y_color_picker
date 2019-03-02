@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Accessible Color Picker</title>
+    <style media="screen">
+      p {
+        color: red;
+        font-family: Helvetica, sans-serif;
+      }
+      input {
+        width: 100px;
+      }
+      div#color {
+        width: 200px;
+        height: 200px;
+        background-color: black;
+      }
+    </style>
+    <script>
+      var hue = 0;
+      var sat = 50;
+      var light = 50;
+      window.onload = function() {
+        console.log("Kyle");
+        init();
+      }
+
+      function init() {
+        var h_el = document.getElementById("hue");
+        var s_el = document.getElementById("saturation");
+        var l_el = document.getElementById("lightness");
+        console.log(h_el);
+        h_el.addEventListener("change", getValue, false);
+        s_el.addEventListener("change", getValue, false);
+        l_el.addEventListener("change", getValue, false);
+      }
+
+      function getValue(e) {
+        console.log(e);
+        var input = e.target;
+        console.log(input);
+        var val = input.value;
+        console.log(val);
+        if(input.id == "hue") {
+          hue = input.value;
+        } else if(input.id == "saturation") {
+          sat = input.value;
+        } else if(input.id == "lightness") {
+          light = input.value;
+        }
+        setColor(hue, sat, light);
+      }
+
+      function setColor(h, s, l) {
+          var swatch = document.getElementById("color");
+          console.log(swatch);
+          swatch.style.backgroundColor = `hsl(${h}, ${s}%, ${l}%)`;
+          console.log(`hsl(${h}, ${s}%, ${l}%)`);
+          console.log("hsl(" + h + ", " + s + "%, " + l + "%)");
+      }
+     </script>
+  </head>
+  <body>
+<h1>Accessible Color Picker</h1>
+<p>This is a Color Picker usable by people with visual or motor disabilities.</p>
+<ol>
+  <li>hue: <input id="hue" type="number" value="0" min="0" max="360"></li>
+  <li>saturation: <input id="saturation" type="number" value="50" min="0" max="100"></li>
+  <li>lightness: <input id="lightness" type="number" value="50" min="0" max="100"></li>
+</ol>
+<div id="color"></div>
+  </body>
+</html>
