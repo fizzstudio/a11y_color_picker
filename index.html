@@ -4,8 +4,42 @@
     <meta charset="utf-8">
     <title>Accessible Color Picker</title>
     <style media="screen">
+    .slidecontainer {
+width: 100%;
+}
+//default slider taken from https://www.w3schools.com/howto/howto_js_rangeslider.asp
+.slider {
+-webkit-appearance: none;
+width: 100%;
+height: 25px;
+background: #d3d3d3;
+outline: none;
+opacity: 0.7;
+-webkit-transition: .2s;
+transition: opacity .2s;
+}
+
+.slider:hover {
+opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+-webkit-appearance: none;
+appearance: none;
+width: 25px;
+height: 25px;
+background: #4CAF50;
+cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+width: 25px;
+height: 25px;
+background: #4CAF50;
+cursor: pointer;
+}
       p {
-        color: red;
+        color: blue;
         font-family: Helvetica, sans-serif;
       }
       input {
@@ -21,6 +55,7 @@
       var hue = 0;
       var sat = 50;
       var light = 50;
+      var alp = 50;
       window.onload = function() {
         console.log("Kyle");
         init();
@@ -30,10 +65,12 @@
         var h_el = document.getElementById("hue");
         var s_el = document.getElementById("saturation");
         var l_el = document.getElementById("lightness");
+        var a_el = document.getElementById("alpha");
         console.log(h_el);
         h_el.addEventListener("change", getValue, false);
         s_el.addEventListener("change", getValue, false);
         l_el.addEventListener("change", getValue, false);
+        a_el.addEventListener("change", getValue, false);
       }
 
       function getValue(e) {
@@ -48,14 +85,16 @@
           sat = input.value;
         } else if(input.id == "lightness") {
           light = input.value;
+        } else if(input.id == "alpha") {
+          alp = input.value;
         }
-        setColor(hue, sat, light);
+        setColor(hue, sat, light, alp);
       }
 
-      function setColor(h, s, l) {
+      function setColor(h, s, l, a) {
           var swatch = document.getElementById("color");
           console.log(swatch);
-          swatch.style.backgroundColor = `hsl(${h}, ${s}%, ${l}%)`;
+          swatch.style.backgroundColor = `hsla(${h}, ${s}%, ${l}%, ${a}%)`;
           console.log(`hsl(${h}, ${s}%, ${l}%)`);
           console.log("hsl(" + h + ", " + s + "%, " + l + "%)");
       }
@@ -65,9 +104,14 @@
 <h1>Accessible Color Picker</h1>
 <p>This is a Color Picker usable by people with visual or motor disabilities.</p>
 <ol>
-  <li>hue: <input id="hue" type="number" value="0" min="0" max="360"></li>
-  <li>saturation: <input id="saturation" type="number" value="50" min="0" max="100"></li>
-  <li>lightness: <input id="lightness" type="number" value="50" min="0" max="100"></li>
+  <li>hue: <input id="hue" type="number" value="0" min="0" max="360">
+    <input id="hue" type="range" min="0" max="360" value="180"></li>
+  <li>saturation: <input id="saturation" type="number" value="50" min="0" max="100">
+    <input id="saturation" type="range" min="0" max="100" value="50"></li>
+  <li>lightness: <input id="lightness" type="number" value="50" min="0" max="100">
+    <input id="lightness" type="range" min="0" max="100" value="50"></li>
+  <li>alpha: <input id="alpha" type="number" value="50" min="0" max="100">
+    <input id="alpha" type="range" min="0" max="100" value="75"></li>
 </ol>
 <div id="color"></div>
   </body>
