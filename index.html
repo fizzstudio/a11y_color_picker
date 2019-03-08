@@ -52,67 +52,48 @@ cursor: pointer;
       }
     </style>
     <script>
-      var hue = 0;
-      var sat = 50;
-      var light = 50;
-      var alp = 50;
+      var color = {
+        hue: 0,
+        saturation: 50,
+        lightness: 50,
+        alpha: 100
+      }
       window.onload = function() {
-        console.log("Kyle");
         init();
       }
 
       function init() {
-        var h_el = document.getElementById("hue");
-        var s_el = document.getElementById("saturation");
-        var l_el = document.getElementById("lightness");
-        var a_el = document.getElementById("alpha");
-        var h_el_s = document.getElementById("hue1");
-        var s_el_s = document.getElementById("saturation1");
-        var l_el_s = document.getElementById("lightness1");
-        var a_el_s = document.getElementById("alpha1");
-        console.log(h_el);
-        h_el.addEventListener("change", getValue, false);
-        s_el.addEventListener("change", getValue, false);
-        l_el.addEventListener("change", getValue, false);
-        a_el.addEventListener("change", getValue, false);
-        h_el_s.addEventListener("change", getValue, false);
-        s_el_s.addEventListener("change", getValue, false);
-        l_el_s.addEventListener("change", getValue, false);
-        a_el_s.addEventListener("change", getValue, false);
+        var input_els = document.querySelectorAll("input.a11y_color_picker");
+        for(var i=0; i<input_els.length; i++) {
+          var each_input = input_els[i];
+          each_input.addEventListener("change", getValue, false);
+        }
       }
 
       function getValue(e) {
-        console.log(e);
         var input = e.target;
-        console.log(input);
         var val = input.value;
-        console.log(val);
-        if(input.id == "hue") {
-          hue = input.value;
-        } else if(input.id == "saturation") {
-          sat = input.value;
-        } else if(input.id == "lightness") {
-          light = input.value;
-        } else if(input.id == "alpha") {
-          alp = input.value;
-        } else if(input.id == "hue1") {
-          hue = input.value;
-        } else if(input.id == "saturation1") {
-          sat = input.value;
-        } else if(input.id == "lightness1") {
-          light = input.value;
-        } else if(input.id == "alpha1") {
-          alp = input.value;
+        color[input.dataset.component] = val;
+
+        var component_els = document.querySelectorAll("input[data-component=" +input.dataset.component+ "]");
+        for(var i=0; i<component_els.length; i++) {
+          var each_input = component_els[i];
+          each_input.value = val;
+          console.log(each_input);
         }
-        setColor(hue, sat, light, alp);
+
+        setColor(color.hue, color.saturation, color.lightness, color.alpha);
       }
 
       function setColor(h, s, l, a) {
+          console.log(h, s, l, a);
           var swatch = document.getElementById("color");
-          console.log(swatch);
-          swatch.style.backgroundColor = `hsla(${h}, ${s}%, ${l}%, ${a}%)`;
-          console.log(`hsl(${h}, ${s}%, ${l}%)`);
-          console.log("hsl(" + h + ", " + s + "%, " + l + "%)");
+          // console.log(swatch);
+          var hsla = `hsla(${h}, ${s}%, ${l}%, ${a}%)`;
+          console.log(hsla);
+          swatch.style.backgroundColor = hsla;
+          // console.log(`hsl(${h}, ${s}%, ${l}%)`);
+          // console.log("hsl(" + h + ", " + s + "%, " + l + "%)");
       }
      </script>
   </head>
@@ -120,14 +101,14 @@ cursor: pointer;
 <h1>Accessible Color Picker</h1>
 <p>This is a Color Picker usable by people with visual or motor disabilities.</p>
 <ol>
-  <li>hue: <input id="hue" type="number" value="0" min="0" max="360">
-    <input id="hue1" type="range" min="0" max="360" value="180"></li>
-  <li>saturation: <input id="saturation" type="number" value="50" min="0" max="100">
-    <input id="saturation1" type="range" min="0" max="100" value="50"></li>
-  <li>lightness: <input id="lightness" type="number" value="50" min="0" max="100">
-    <input id="lightness1" type="range" min="0" max="100" value="50"></li>
-  <li>alpha: <input id="alpha" type="number" value="50" min="0" max="100">
-    <input id="alpha1" type="range" min="0" max="100" value="75"></li>
+  <li>hue: <input class="a11y_color_picker" data-component="hue" id="hue"  type="number" value="0" min="0" max="360">
+    <input class="a11y_color_picker" data-component="hue" id="hue1"  type="range" min="0" max="360" value="180"></li>
+  <li>saturation: <input class="a11y_color_picker" data-component="saturation" id="saturation"  type="number" value="50" min="0" max="100">
+    <input class="a11y_color_picker" data-component="saturation" id="saturation1"  type="range" min="0" max="100" value="50"></li>
+  <li>lightness: <input class="a11y_color_picker" data-component="lightness" id="lightness"  type="number" value="50" min="0" max="100">
+    <input class="a11y_color_picker" data-component="lightness" id="lightness1"  type="range" min="0" max="100" value="50"></li>
+  <li>alpha: <input class="a11y_color_picker" data-component="alpha" id="alpha"  type="number" value="50" min="0" max="100">
+    <input class="a11y_color_picker" data-component="alpha" id="alpha1"  type="range" min="0" max="100" value="75"></li>
 </ol>
 <div id="color"></div>
   </body>
