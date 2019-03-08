@@ -66,11 +66,19 @@ cursor: pointer;
         var s_el = document.getElementById("saturation");
         var l_el = document.getElementById("lightness");
         var a_el = document.getElementById("alpha");
+        var h_el_s = document.getElementById("hue1");
+        var s_el_s = document.getElementById("saturation1");
+        var l_el_s = document.getElementById("lightness1");
+        var a_el_s = document.getElementById("alpha1");
         console.log(h_el);
         h_el.addEventListener("change", getValue, false);
         s_el.addEventListener("change", getValue, false);
         l_el.addEventListener("change", getValue, false);
         a_el.addEventListener("change", getValue, false);
+        h_el_s.addEventListener("change", getValue, false);
+        s_el_s.addEventListener("change", getValue, false);
+        l_el_s.addEventListener("change", getValue, false);
+        a_el_s.addEventListener("change", getValue, false);
       }
 
       function getValue(e) {
@@ -86,6 +94,14 @@ cursor: pointer;
         } else if(input.id == "lightness") {
           light = input.value;
         } else if(input.id == "alpha") {
+          alp = input.value;
+        } else if(input.id == "hue1") {
+          hue = input.value;
+        } else if(input.id == "saturation1") {
+          sat = input.value;
+        } else if(input.id == "lightness1") {
+          light = input.value;
+        } else if(input.id == "alpha1") {
           alp = input.value;
         }
         setColor(hue, sat, light, alp);
@@ -105,13 +121,13 @@ cursor: pointer;
 <p>This is a Color Picker usable by people with visual or motor disabilities.</p>
 <ol>
   <li>hue: <input id="hue" type="number" value="0" min="0" max="360">
-    <input id="hue" type="range" min="0" max="360" value="180"></li>
+    <input id="hue1" type="range" min="0" max="360" value="180"></li>
   <li>saturation: <input id="saturation" type="number" value="50" min="0" max="100">
-    <input id="saturation" type="range" min="0" max="100" value="50"></li>
+    <input id="saturation1" type="range" min="0" max="100" value="50"></li>
   <li>lightness: <input id="lightness" type="number" value="50" min="0" max="100">
-    <input id="lightness" type="range" min="0" max="100" value="50"></li>
+    <input id="lightness1" type="range" min="0" max="100" value="50"></li>
   <li>alpha: <input id="alpha" type="number" value="50" min="0" max="100">
-    <input id="alpha" type="range" min="0" max="100" value="75"></li>
+    <input id="alpha1" type="range" min="0" max="100" value="75"></li>
 </ol>
 <div id="color"></div>
   </body>
