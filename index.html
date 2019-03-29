@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Accessible Color Picker</title>
     <style media="screen">
-    .slidecontainer {
+    /* .slidecontainer {
 width: 100%;
 }
 //default slider taken from https://www.w3schools.com/howto/howto_js_rangeslider.asp
@@ -37,15 +37,15 @@ width: 25px;
 height: 25px;
 background: #4CAF50;
 cursor: pointer;
-}
+} */
       p {
         color: blue;
         font-family: Helvetica, sans-serif;
       }
-      input {
+      /* input {
         width: 100px;
-      }
-      div#a11y_color_picker_swatch {
+      } */
+      /* div#a11y_color_picker_swatch {
         width: 200px;
         height: 200px;
         background-color: black;
@@ -65,67 +65,105 @@ cursor: pointer;
       }
       button:hover {
         background: rgb(146, 201, 239);
-      }
+      } */
     </style>
   </head>
   <body>
 <h1>Accessible Color Picker</h1>
 <p>This is a Color Picker usable by people with visual or motor disabilities.</p>
-<button id="button" onclick="createColorPicker()">Create Color Picker</button>
+<button id="button" onclick="toggleColorPicker()" style="background-color:rgb(90, 156, 211); color: white;">Create Color Picker</button>
 <script>
+// finish inline styles
+// challenge: see if you can have multiple color pickers in the same page
+// setTextColor, setBackgroundColor
+// each of these controls should output to its own text inputs
+// after button put a text element; set hsla to that element
+// research "making form controls accessible" i.e. tab index
 
-  function createColorPicker() {
+  var picker = null;
+
+  function toggleColorPicker() {
+    // creates color picker onclick
+      if(picker === null) {
+        var container = document.getElementById("color_picker_container");
+        picker = new A11yColorPicker(container, 200, 200);
+      } else {
+        var color = picker.close();
+        picker = null;
+        console.log(color);
+      }
       console.log("button clicked");
-      var container = document.getElementById("color_picker_container");
-      picker = new A11yColorPicker(container);
-      picker.createSwatch(container);
-      picker.createInputs(container);
   }
 
   class A11yColorPicker {
 
-    constructor(container) {
+    constructor(container, width, height) {
       this.container = container;
-  }
+      this.swatch_width = width;
+      this.swatch_height = height;
+      this.hsla = null;
+      this.color = {
+        hue: 0,
+        saturation: 50,
+        lightness: 50,
+        alpha: 100
+      }
+      this.createSwatch(this.container);
+      this.createInputs();
+    }
 
-    createSwatch(container, width, height) {
+    close() {
+      while(this.container.firstChild) {
+        this.container.firstChild.remove();
+      }
+      return this.hsla;
+    }
+
+    createSwatch() {
       var swatch = document.createElement("div");
       swatch.id = "a11y_color_picker_swatch";
-      swatch.width = width;
-      swatch.height = height;
-      container.appendChild(swatch);
+      swatch.style.backgroundColor = 'black';
+      swatch.style.width = this.swatch_width+'px';
+      swatch.style.height = this.swatch_height+'px';
+      this.container.appendChild(swatch);
       // CREATES SWATCH_SIZE INPUT TO ADJUST ITS WIDTH/HEIGHT
       var swatch_size = document.createElement("input");
       swatch_size.type = "number";
       swatch_size.min = 200;
       swatch_size.max = 1000;
-      swatch_size.addEventListener("change", this.getValue_swatch, false)
-      container.appendChild(swatch_size);
+      swatch_size.addEventListener("change", this.getValue_swatch.bind(this), false);
+      this.container.appendChild(swatch_size);
       // CREATES SWATH_SIZE LABEL
       var swatch_size_label = document.createTextNode("Adjust Picker Size: ");
-      container.insertBefore(swatch_size_label, swatch_size);
+      this.container.insertBefore(swatch_size_label, swatch_size);
       console.log("swatch created");
     }
 
-    createInputs(container) {
+    createInputs() {
       var inputs = ["hue", "saturation", "lightness", "alpha"];
       var component_list = document.createElement("ul");
-      container.appendChild(component_list);
+      component_list.style.listStyle = 'none';
+      component_list.style.marginLeft = '0';
+      this.container.appendChild(component_list);
       for(var i = 0; i < inputs.length; i++) {
         // create list item for each component
         var component_item = document.createElement("li");
         component_list.appendChild(component_item);
         // create label
         var label = document.createElement("label");
+        label.style.display = 'inline-block';
+        label.style.width = '5em';
         label.textContent = inputs[i]+": ";
         component_item.appendChild(label);
         // create number input
         var input_num = document.createElement("input");
+        input_num.style.width = 100+'px';
         input_num.type = "number";
         input_num.classList.add("a11y_color_picker");
         input_num.dataset.component = inputs[i];
         // create range input
         var input_range = document.createElement("input");
+        input_range.style.width = 100+'px';
         input_range.type = "range";
         input_range.classList.add("a11y_color_picker");
         input_range.dataset.component = inputs[i];
@@ -144,8 +182,8 @@ cursor: pointer;
           input_num.value = "50";
           input_range.value = "50";
         }
-        input_num.addEventListener("change", this.getValue, false);
-        input_range.addEventListener("change", this.getValue, false);
+        input_num.addEventListener("change", this.getValue.bind(this), false);
+        input_range.addEventListener("change", this.getValue.bind(this), false);
         // append number and range inputs to list elements
         component_item.appendChild(input_num);
         component_item.appendChild(input_range);
@@ -154,179 +192,37 @@ cursor: pointer;
     }
 
     getValue(e) {
-      var color = {
-        hue: 0,
-        saturation: 50,
-        lightness: 50,
-        alpha: 100
-      }
       var input = e.target;
       var val = input.value;
-      color[input.dataset.component] = val;
+      this.color[input.dataset.component] = val;
       var component_els = document.querySelectorAll("input[data-component=" +input.dataset.component+ "]");
       for(var i=0; i<component_els.length; i++) {
         var each_input = component_els[i];
         each_input.value = val;
         console.log(each_input);
       }
-      picker.setColor(color.hue, color.saturation, color.lightness, color.alpha);
+      this.setColor();
     }
 
-    setColor(h, s, l, a) {
-        console.log(h, s, l, a);
+    setColor() {
+        console.log();
         var swatch = document.getElementById("a11y_color_picker_swatch");
         // console.log(swatch);
-        var hsla = `hsla(${h}, ${s}%, ${l}%, ${a}%)`;
-        console.log(hsla);
-        swatch.style.backgroundColor = hsla;
-        alert(hsla);
-        // swatch_color = hsla;
-        // return swatch_color;
-        // console.log(`hsl(${h}, ${s}%, ${l}%)`);
-        // console.log("hsl(" + h + ", " + s + "%, " + l + "%)");
+        this.hsla = `hsla(${this.color.hue}, ${this.color.saturation}%, ${this.color.lightness}%, ${this.color.alpha}%)`;
+        console.log(this.hsla);
+        swatch.style.backgroundColor = this.hsla;
+        // create input box and output new color
     }
 
     getValue_swatch(e) {
       var input = e.target;
       var val = input.value;
       console.log(val);
-      document.getElementById("a11y_color_picker_swatch").width = val.px;
-      document.getElementById("a11y_color_picker_swatch").height = val.px;
+      // allows user to change width and height of swatch
+      document.getElementById("a11y_color_picker_swatch").style.width = `${val}px`;
+      document.getElementById("a11y_color_picker_swatch").style.height = `${val}px`;
     }
   }
-
-    // window.onload = function() {
-    //   init();
-    // }
-    //
-    // function init() {
-    //   document.getElementById("button").addEventListener("click", createColorPicker(document.getElementById("color_picker_container")));
-    // }
-    //
-    // function createColorPicker(container) {
-    //   picker = new A11yColorPicker(container);
-    //   // document.getElementById("button").appendChild(picker);
-    //   // document.body.appendChild(picker);
-    //   document.body.appendChild(picker);
-    // }
-// ***
-// OLD JS FUNCTIONS
-// ***
-//   var color = {
-//     hue: 0,
-//     saturation: 50,
-//     lightness: 50,
-//     alpha: 100
-//   }
-//   window.onload = function() {
-//     init(document.getElementById("color_picker_container"));
-//     // var container = document.getElementById("color_picker_container";
-//     // var color_picker = new A11yColorPicker(container, 50, 50);
-//     // var color = color_picker.hsl;
-//   }
-// // ***
-// // TASK FOR 3/29
-// // create new class called "A11yColorPicker"
-// // pass container into class
-// // everything encapsulated within class
-// // let user change size of swatch
-// // figure out how to add css styles/classes via JS
-// // should be able to put multiple color pickers on one page
-// // swatch should return color
-// // ***
-//   function init(container) {
-//     createSwatch(container);
-//     createInputs(container);
-//   }
-//
-//   function createSwatch(container) {
-//     var swatch = document.createElement("div");
-//     swatch.id = "a11y_color_picker_swatch";
-//     container.appendChild(swatch);
-//   }
-//
-//   function getValue(e) {
-//     var input = e.target;
-//     var val = input.value;
-//     color[input.dataset.component] = val;
-//
-//     var component_els = document.querySelectorAll("input[data-component=" +input.dataset.component+ "]");
-//     for(var i=0; i<component_els.length; i++) {
-//       var each_input = component_els[i];
-//       each_input.value = val;
-//       console.log(each_input);
-//     }
-//
-//   function createInputs(container) {
-//     var inputs = ["hue", "saturation", "lightness", "alpha"];
-//     var component_list = document.createElement("ul");
-//     container.appendChild(component_list);
-//     for(var i = 0; i < inputs.length; i++) {
-//       // create list item for each component
-//       var component_item = document.createElement("li");
-//       component_list.appendChild(component_item);
-//       // create label
-//       var label = document.createElement("label");
-//       label.textContent = inputs[i]+": ";
-//       component_item.appendChild(label);
-//       // create number input
-//       var input_num = document.createElement("input");
-//       input_num.type = "number";
-//       input_num.classList.add("a11y_color_picker");
-//       input_num.dataset.component = inputs[i];
-//       // create range input
-//       var input_range = document.createElement("input");
-//       input_range.type = "range";
-//       input_range.classList.add("a11y_color_picker");
-//       input_range.dataset.component = inputs[i];
-//       if(inputs[i] == "hue") {
-//         input_num.min = "0";
-//         input_range.min = "0";
-//         input_num.max = "360";
-//         input_range.max = "360";
-//         input_num.value = "0";
-//         input_range.value = "0";
-//       } else {
-//         input_num.min = "0";
-//         input_range.min = "0";
-//         input_num.max = "100";
-//         input_range.max = "100";
-//         input_num.value = "50";
-//         input_range.value = "50";
-//       }
-//       input_num.addEventListener("change", getValue, false);
-//       input_range.addEventListener("change", getValue, false);
-//       // append number and range inputs to list elements
-//       component_item.appendChild(input_num);
-//       component_item.appendChild(input_range);
-//     }
-//   }
-//
-//   function getValue(e) {
-//     var input = e.target;
-//     var val = input.value;
-//     color[input.dataset.component] = val;
-//
-//     var component_els = document.querySelectorAll("input[data-component=" +input.dataset.component+ "]");
-//     for(var i=0; i<component_els.length; i++) {
-//       var each_input = component_els[i];
-//       each_input.value = val;
-//       console.log(each_input);
-//     }
-//
-//     setColor(color.hue, color.saturation, color.lightness, color.alpha);
-//   }
-//
-//   function setColor(h, s, l, a) {
-//       console.log(h, s, l, a);
-//       var swatch = document.getElementById("a11y_color_picker_swatch");
-//       // console.log(swatch);
-//       var hsla = `hsla(${h}, ${s}%, ${l}%, ${a}%)`;
-//       console.log(hsla);
-//       swatch.style.backgroundColor = hsla;
-//       // console.log(`hsl(${h}, ${s}%, ${l}%)`);
-//       // console.log("hsl(" + h + ", " + s + "%, " + l + "%)");
-//   }
  </script>
    <div id="color_picker_container"> </div>
   </body>
