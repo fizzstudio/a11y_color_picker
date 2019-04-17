@@ -84,9 +84,11 @@ cursor: pointer;
 
   function toggleColorPicker() {
     // creates color picker onclick
+      // document.getElementById("button").hover.backgroundColor = 'rgb(146, 201, 239)';
       if(picker === null) {
         var container = document.getElementById("color_picker_container");
         picker = new A11yColorPicker(container, 200, 200);
+        document.getElementById("button").textContent = "Close Color Picker";
       } else {
         var color = picker.close();
         picker = null;
@@ -109,12 +111,14 @@ cursor: pointer;
         alpha: 100
       }
       this.createSwatch(this.container);
+      this.createColorLabel();
       this.createInputs();
     }
 
     close() {
       while(this.container.firstChild) {
         this.container.firstChild.remove();
+        document.getElementById("button").textContent = "Create Color Picker";
       }
       return this.hsla;
     }
@@ -130,7 +134,7 @@ cursor: pointer;
       var swatch_size = document.createElement("input");
       swatch_size.type = "number";
       swatch_size.min = 200;
-      swatch_size.max = 1000;
+      swatch_size.max = 500;
       swatch_size.addEventListener("change", this.getValue_swatch.bind(this), false);
       this.container.appendChild(swatch_size);
       // CREATES SWATH_SIZE LABEL
@@ -145,6 +149,7 @@ cursor: pointer;
       component_list.style.listStyle = 'none';
       component_list.style.marginLeft = '0';
       this.container.appendChild(component_list);
+      var index = 1; // used to create tabindex
       for(var i = 0; i < inputs.length; i++) {
         // create list item for each component
         var component_item = document.createElement("li");
@@ -158,15 +163,21 @@ cursor: pointer;
         // create number input
         var input_num = document.createElement("input");
         input_num.style.width = 100+'px';
+        input_num.style.borderColor = "grey";
         input_num.type = "number";
         input_num.classList.add("a11y_color_picker");
         input_num.dataset.component = inputs[i];
+        input_num.style.tabindex = index;
+        index++;
         // create range input
         var input_range = document.createElement("input");
         input_range.style.width = 100+'px';
+        input_range.style.borderColor = "grey";
         input_range.type = "range";
         input_range.classList.add("a11y_color_picker");
         input_range.dataset.component = inputs[i];
+        input_range.style.tabindex = index++;
+        index++;
         if(inputs[i] == "hue") {
           input_num.min = "0";
           input_range.min = "0";
@@ -211,7 +222,15 @@ cursor: pointer;
         this.hsla = `hsla(${this.color.hue}, ${this.color.saturation}%, ${this.color.lightness}%, ${this.color.alpha}%)`;
         console.log(this.hsla);
         swatch.style.backgroundColor = this.hsla;
+        document.getElementById("color_label").textContent = this.hsla;
         // create input box and output new color
+    }
+
+    createColorLabel() {
+      var color_label = document.createElement("text");
+      color_label.textContent = this.hsla;
+      color_label.id = "color_label";
+      this.container.appendChild(color_label);
     }
 
     getValue_swatch(e) {
